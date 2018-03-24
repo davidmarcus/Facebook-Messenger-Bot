@@ -1,5 +1,5 @@
-import tensorflow as tf 
-import numpy as np 
+import tensorflow as tf
+import numpy as np
 import sys
 from random import randint
 import datetime
@@ -71,7 +71,7 @@ def getTrainingBatch(localXTrain, localYTrain, localBatchSize, maxLen):
 			shiftedExample[eosFound+1] = padTokenIndex
 		laggedLabels.append(shiftedExample)
 
-	# Need to transpose these 
+	# Need to transpose these
 	reversedList = np.asarray(reversedList).T.tolist()
 	labels = labels.T.tolist()
 	laggedLabels = np.asarray(laggedLabels).T.tolist()
@@ -140,7 +140,7 @@ with open("wordList.txt", "rb") as fp:
 
 vocabSize = len(wordList)
 
-# If you've run the entirety of word2vec.py then these lines will load in 
+# If you've run the entirety of word2vec.py then these lines will load in
 # the embedding matrix.
 if (os.path.isfile('embeddingMatrix.npy')):
 	wordVectors = np.load('embeddingMatrix.npy')
@@ -149,11 +149,11 @@ else:
 	question = 'Since we cant find an embedding matrix, how many dimensions do you want your word vectors to be?: '
 	wordVecDimensions = int(input(question))
 
-# Add two entries to the word vector matrix. One to represent padding tokens, 
+# Add two entries to the word vector matrix. One to represent padding tokens,
 # and one to represent an end of sentence token
 padVector = np.zeros((1, wordVecDimensions), dtype='int32')
 EOSVector = np.ones((1, wordVecDimensions), dtype='int32')
-if (os.path.isfile('embeddingMatrix.npy')): 
+if (os.path.isfile('embeddingMatrix.npy')):
 	wordVectors = np.concatenate((wordVectors,padVector), axis=0)
 	wordVectors = np.concatenate((wordVectors,EOSVector), axis=0)
 
@@ -186,7 +186,7 @@ encoderLSTM = tf.nn.rnn_cell.BasicLSTMCell(lstmUnits, state_is_tuple=True)
 #encoderLSTM = tf.nn.rnn_cell.MultiRNNCell([singleCell]*numLayersLSTM, state_is_tuple=True)
 # Architectural choice of of whether or not to include ^
 
-decoderOutputs, decoderFinalState = tf.contrib.legacy_seq2seq.embedding_rnn_seq2seq(encoderInputs, decoderInputs, encoderLSTM, 
+decoderOutputs, decoderFinalState = tf.contrib.legacy_seq2seq.embedding_rnn_seq2seq(encoderInputs, decoderInputs, encoderLSTM,
 															vocabSize, vocabSize, embeddingDim, feed_previous=feedPrevious)
 
 decoderPrediction = tf.argmax(decoderOutputs, 2)
@@ -208,11 +208,12 @@ logdir = "tensorboard/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "/
 writer = tf.summary.FileWriter(logdir, sess.graph)
 
 # Some test strings that we'll use as input at intervals during training
-encoderTestStrings = ["whats up bro",
-					"hi",
-					"hey how are you",
-					"that girl was really cute tho",
-					"that dodgers game was awesome"
+encoderTestStrings = [
+					"how's it going?",
+					"did zoey finish her homework?",
+					"when are you coming home?",
+					"what is dark matter?",
+					"how is your day going?",
 					]
 
 zeroVector = np.zeros((1), dtype='int32')
@@ -226,7 +227,7 @@ for i in range(numIterations):
 	feedDict.update({feedPrevious: False})
 
 	curLoss, _, pred = sess.run([loss, optimizer, decoderPrediction], feed_dict=feedDict)
-	
+
 	if (i % 50 == 0):
 		print('Current loss:', curLoss, 'at iteration', i)
 		summary = sess.run(merged, feed_dict=feedDict)
