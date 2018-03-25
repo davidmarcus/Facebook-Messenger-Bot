@@ -210,10 +210,13 @@ writer = tf.summary.FileWriter(logdir, sess.graph)
 # Some test strings that we'll use as input at intervals during training
 encoderTestStrings = [
 					"how's it going?",
+					"let's grab dinner.",
 					"did zoey finish her homework?",
 					"when are you coming home?",
 					"what is dark matter?",
 					"how is your day going?",
+					"i'm so tired",
+					"can you pick up the kids?",
 					]
 
 zeroVector = np.zeros((1), dtype='int32')
